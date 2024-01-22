@@ -14,11 +14,15 @@ public class Number extends Part {
     }
 
     public static boolean is(String s){
+        if (s.indexOf('.') != s.lastIndexOf('.')) {
+            return false; // More than one decimal point is not allowed
+        }
+
         for (int i = 0; i < s.length(); i++) {
-            if (!Character.isDigit(s.charAt(i))) {
+            if (!Character.isDigit(s.charAt(i)) && s.charAt(i) != '.') {
                 return false;
             }
-        }   
+        }
         return true;
     }
 }

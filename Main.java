@@ -1,9 +1,24 @@
-import java.util.List;
-
+import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
-        Expression expression = new Expression("45.4");
-        System.out.println(expression.evaluate().getValue());
+        Scanner scan = new Scanner(System.in);
+        boolean exit = false;
+        System.out.println("Calculator - By John Patch");
+        System.out.println("Enter 'exit' to exit");
+        while (!exit){
+            System.out.print("Enter an expression (or 'exit' to exit): ");
+            String input = scan.nextLine();
+            if (input.equals("exit")){
+                exit = true;
+            }
+            else {
+                Expression expression = new Expression(input);
+                System.out.println("Calculating...");
+                System.out.println(expression.evaluate().getValue());
+            }
+        }
+        scan.close();
+        
 
 
 

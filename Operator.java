@@ -54,7 +54,7 @@ public class Operator extends Part{ // add symbol, subtract symbol, multiply sym
     }
 
     public static boolean is(String s){ // at the current only handles +,-,*,/
-        if (s.length() == 1 && (s.charAt(0) == '+' || s.charAt(0) == '-' || s.charAt(0) == '*' || s.charAt(0) == '/')) {
+        if (s.length() == 1 && (s.charAt(0) == '+' || s.charAt(0) == '-' || s.charAt(0) == '*' || s.charAt(0) == '/') || s.charAt(0) == '^') {
             return true;
         }
         return false;
