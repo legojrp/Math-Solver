@@ -2,33 +2,33 @@ import java.util.List;
 import java.util.ArrayList;
 public class Expression { // for example 2 + 2, or 56 + x, one side of an equals, to simplify, like <56 + x> = 0, which would be just 56 + x
     
-    private String contains;
     private Part[] parts;
-    public Expression(String input) {
+
+
+    public Expression(String input) { // a method to parse an expression
         List<String> parsedExpression = parseExpression(input);
         String[] tokens = parsedExpression.toArray(new String[0]);
-        contains = input;
         parts = new Part[tokens.length];
-        for (int i = 0; i < tokens.length; i++) { // for each token
+
+        for (int i = 0; i < tokens.length; i++) { // for each token find what type it is
             if (Number.is(tokens[i])) {
                 parts[i] = new Number(tokens[i]);
             } else if (Operator.is(tokens[i])) {
                 parts[i] = new Operator(tokens[i]);
             } else if (Variable.is(tokens[i])) {
                 parts[i] = new Variable(tokens[i]);
-            }
-            else {
-                if (tokens[i].contains("(")){
+            } else {
+                if (tokens[i].contains("(")){ // if theres a parenthesis
                     int nestedParenthesisStart = tokens[i].indexOf("(");
                     int nestedParenthesisEnd = tokens[i].lastIndexOf(")");
-                    if (nestedParenthesisStart != -1 && nestedParenthesisEnd != -1 && nestedParenthesisStart < nestedParenthesisEnd) {
+                    if (nestedParenthesisStart != -1 && nestedParenthesisEnd != -1 && nestedParenthesisStart < nestedParenthesisEnd) { // if the parenthesis is valid
                         String insideParenthesis = tokens[i].substring(nestedParenthesisStart + 1, nestedParenthesisEnd);
                         Parenthesis parenthesis = new Parenthesis(insideParenthesis);
                         parts[i] = parenthesis.getValue();
                     }
                 
                 }
-                else {
+                else { // if there is an invalid token
                     throw new IllegalArgumentException("Invalid input: " + tokens[i]);
                 }
             }
@@ -40,45 +40,47 @@ public class Expression { // for example 2 + 2, or 56 + x, one side of an equals
     }
 
     public Number evaluate() {
-        for  (Part part : parts){
+        for  (Part part : parts){ // get rid of variables / make sure theere isnt any null
             if (part instanceof Variable){
                 return null;
             }
         }
         for (int priority = 0; priority < 3; priority++) { // this loop is priority loop, priority is pemdas order in reverse eg 0 is exp, 1 is mult, 2 is add
-            // for (Part part : parts){
-            //     System.out.println(part.getContains() + " " + this);
-            // }
-            boolean operationDone = true; // this works somehow? to make sure no infinite loops
-            while (operationDone) { // makes sure that there are operations left to be done on that priority level
+            for (Part part : parts){
+                System.out.print(part.getContains());
+            }
+            System.out.println();
+            boolean operationDone = false; // this works somehow? to make sure no infinite loops
+            while (!operationDone) { // makes sure that there are operations left to be done on that priority level
                 operationLoop:
                 for (int i = 0; i < parts.length; i++) { // this loop is for operations themselves
 
-                    for (Part part : parts){
+                    for (Part part : parts){ // makes sure that there are no nulls
                         if (part == null){
                             break operationLoop;
                         }
                     }
-                    if (parts[i] instanceof Operator){
-                        if (parts[i+1] instanceof Operator){
+
+                    if (parts[i] instanceof Operator){ // if the part is an operator
+                        if (parts[i+1] instanceof Operator){ // if two operators are next to each other then return null
                             return null;
                         } 
                         
-                        if (((Operator)parts[i]).getPriority() >= priority){
-                            parts[i] = ((Operator)parts[i]).operate((Number)parts[i-1], (Number)parts[i+1]);
+                        if (((Operator)parts[i]).getPriority() >= priority){ 
+                            parts[i] = ((Operator)parts[i]).operate((Number)parts[i-1], (Number)parts[i+1]); //
                             parts[i-1] = null;
                             parts[i+1] = null;
 
                         }
 
                     }
-                    else if(i>= parts.length && parts[i+1] instanceof Number && parts[i] instanceof Number && priority >= 1) {
+                    else if(i >= parts.length && parts[i+1] instanceof Number && parts[i] instanceof Number && priority >= 1) {
                         Operator operator = new Operator("*");
                         parts[i] = operator.operate((Number)parts[i], (Number)parts[i+1]);
                         parts[i+1] = null;
                     }
                     else {
-                        operationDone = false;
+                        operationDone = true;
                     }
                 }
                 parts = Expression.removeNull(parts);
